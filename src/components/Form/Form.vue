@@ -33,7 +33,7 @@
           <template v-if="v$.form.birthdate.$params.required">
             Поле "Дата рождения" обязательно для заполнения.
           </template>
-          <template v-else-if="v$.form.birthdate.$params.isValidDate">
+          <template v-else-if="v$.form.birthdate.$params.type === 'isValidDate'">
             Поле "Дата рождения" должно быть действительной датой.
           </template>
         </div>
@@ -50,12 +50,7 @@
                maxlength="11"
                required>
         <div class="error--message" v-if="v$.form.phoneNumber.$error">
-          <template v-if="v$.form.phoneNumber.$params.min">
-            Поле "Номер телефона" должно содержать минимум {{ v$.form.phoneNumber.$params.min }} символов.
-          </template>
-          <template v-else>
-            Поле "Номер телефона" обязательно для заполнения.
-          </template>
+         <span v-for="error in v$.form.phoneNumber.$errors" :key="error.$uid"> {{ error.$message }}</span>
         </div>
       </div>
       <div class="page__field">
@@ -67,85 +62,85 @@
       </div>
     </div>
 
-<!--    <div class="form__page" v-if="currentStep === 2">-->
-<!--      <h3>Персональные данные 2</h3>-->
-<!--      <div class="page__field">-->
-<!--        <label for="customer-group">Группа клиентов*</label>-->
-<!--        <select v-model="form.customerGroup" id="customer-group" multiple required>-->
-<!--          <option value="VIP">VIP</option>-->
-<!--          <option value="Проблемные">Проблемные</option>-->
-<!--          <option value="ОМС">ОМС</option>-->
-<!--        </select>-->
-<!--      </div>-->
-<!--      <div class="page__field">-->
-<!--        <label for="doctor">Лечащий врач</label>-->
-<!--        <select v-model="form.doctor" id="doctor">-->
-<!--          <option value="Иванов">Иванов</option>-->
-<!--          <option value="Захаров">Захаров</option>-->
-<!--          <option value="Чернышева">Чернышева</option>-->
-<!--        </select>-->
-<!--      </div>-->
-<!--      <div class="page__field">-->
-<!--        <label for="no-sms">Не отправлять СМС</label>-->
-<!--        <input v-model="form.noSms" id="no-sms" type="checkbox">-->
-<!--      </div>-->
-<!--    </div>-->
+    <div class="form__page" v-if="currentStep === 2">
+      <h3>Персональные данные 2</h3>
+      <div class="page__field">
+        <label for="customer-group">Группа клиентов*</label>
+        <select v-model="form.customerGroup" id="customer-group" multiple required>
+          <option value="VIP">VIP</option>
+          <option value="Проблемные">Проблемные</option>
+          <option value="ОМС">ОМС</option>
+        </select>
+      </div>
+      <div class="page__field">
+        <label for="doctor">Лечащий врач</label>
+        <select v-model="form.doctor" id="doctor">
+          <option value="Иванов">Иванов</option>
+          <option value="Захаров">Захаров</option>
+          <option value="Чернышева">Чернышева</option>
+        </select>
+      </div>
+      <div class="page__field">
+        <label for="no-sms">Не отправлять СМС</label>
+        <input v-model="form.noSms" id="no-sms" type="checkbox">
+      </div>
+    </div>
 
-<!--    <div class="form__page" v-if="currentStep === 3">-->
-<!--      <h3>Адрес</h3>-->
-<!--      <div class="page__field">-->
-<!--        <label for="index">Индекс</label>-->
-<!--        <input v-model="form.address.index" id="index" placeholder="101000">-->
-<!--      </div>-->
-<!--      <div class="page__field">-->
-<!--        <label for="country">Страна</label>-->
-<!--        <input v-model="form.address.country" id="country" placeholder="Россия">-->
-<!--      </div>-->
-<!--      <div class="page__field">-->
-<!--        <label for="region">Область</label>-->
-<!--        <input v-model="form.address.region" id="region" placeholder="Московская область">-->
-<!--      </div>-->
-<!--      <div class="page__field">-->
-<!--        <label for="city">Город*</label>-->
-<!--        <input v-model="form.address.city" id="city" required placeholder="г. Москва">-->
-<!--      </div>-->
-<!--      <div class="page__field">-->
-<!--        <label for="street">Улица</label>-->
-<!--        <input v-model="form.address.street" id="street" placeholder="ул. Московское шоссе">-->
-<!--      </div>-->
-<!--      <div class="page__field">-->
-<!--        <label for="house">Дом</label>-->
-<!--        <input v-model="form.address.house" id="house" placeholder="д. 1">-->
-<!--      </div>-->
-<!--    </div>-->
+    <div class="form__page" v-if="currentStep === 3">
+      <h3>Адрес</h3>
+      <div class="page__field">
+        <label for="index">Индекс</label>
+        <input v-model="form.address.index" id="index" placeholder="101000">
+      </div>
+      <div class="page__field">
+        <label for="country">Страна</label>
+        <input v-model="form.address.country" id="country" placeholder="Россия">
+      </div>
+      <div class="page__field">
+        <label for="region">Область</label>
+        <input v-model="form.address.region" id="region" placeholder="Московская область">
+      </div>
+      <div class="page__field">
+        <label for="city">Город*</label>
+        <input v-model="form.address.city" id="city" required placeholder="г. Москва">
+      </div>
+      <div class="page__field">
+        <label for="street">Улица</label>
+        <input v-model="form.address.street" id="street" placeholder="ул. Московское шоссе">
+      </div>
+      <div class="page__field">
+        <label for="house">Дом</label>
+        <input v-model="form.address.house" id="house" placeholder="д. 1">
+      </div>
+    </div>
 
-<!--    <div class="form__page" v-if="currentStep === 4">-->
-<!--      <h3>Документы</h3>-->
-<!--      <div class="page__field">-->
-<!--        <label for="document-type">Тип документа*</label>-->
-<!--        <select v-model="form.passport.type" id="document-type" required>-->
-<!--          <option value="Паспорт">Паспорт</option>-->
-<!--          <option value="Свидетельство о рождении">Свидетельство о рождении</option>-->
-<!--          <option value="Водительское удостоверение">Водительское удостоверение</option>-->
-<!--        </select>-->
-<!--      </div>-->
-<!--      <div class="page__field">-->
-<!--        <label for="passport-series">Серия</label>-->
-<!--        <input v-model="form.passport.series" id="passport-series">-->
-<!--      </div>-->
-<!--      <div class="page__field">-->
-<!--        <label for="passport-number">Номер</label>-->
-<!--        <input v-model="form.passport.number" id="passport-number">-->
-<!--      </div>-->
-<!--      <div class="page__field">-->
-<!--        <label for="passport-issuer">Кем выдан</label>-->
-<!--        <input v-model="form.passport.issuer" id="passport-issuer">-->
-<!--      </div>-->
-<!--      <div class="page__field">-->
-<!--        <label for="passport-issued-date">Дата выдачи*</label>-->
-<!--        <input v-model="form.passport.issuedDate" id="passport-issued-date" type="date" required>-->
-<!--      </div>-->
-<!--    </div>-->
+    <div class="form__page" v-if="currentStep === 4">
+      <h3>Документы</h3>
+      <div class="page__field">
+        <label for="document-type">Тип документа*</label>
+        <select v-model="form.passport.type" id="document-type" required>
+          <option value="Паспорт">Паспорт</option>
+          <option value="Свидетельство о рождении">Свидетельство о рождении</option>
+          <option value="Водительское удостоверение">Водительское удостоверение</option>
+        </select>
+      </div>
+      <div class="page__field">
+        <label for="passport-series">Серия</label>
+        <input v-model="form.passport.series" id="passport-series">
+      </div>
+      <div class="page__field">
+        <label for="passport-number">Номер</label>
+        <input v-model="form.passport.number" id="passport-number">
+      </div>
+      <div class="page__field">
+        <label for="passport-issuer">Кем выдан</label>
+        <input v-model="form.passport.issuer" id="passport-issuer">
+      </div>
+      <div class="page__field">
+        <label for="passport-issued-date">Дата выдачи*</label>
+        <input v-model="form.passport.issuedDate" id="passport-issued-date" type="date" required>
+      </div>
+    </div>
 
 
     <div class="stepBtnGroup">
@@ -218,7 +213,7 @@ export default {
           numeric,
           regex: /^7[0-9]{10}$/,
           minLength: minLength(11),
-          maxLength: maxLength(11)
+          maxLength: maxLength(11),
         },
         // customerGroup: {required},
         // city: {required},
@@ -227,8 +222,9 @@ export default {
     }
   },
   methods: {
-    submitForm() {
-      console.log("submitForm")
+    async submitForm() {
+      const result = await this.v$.$validate();
+      console.log("submitForm", result)
     },
     nextStep() {
       this.currentStep++
@@ -240,7 +236,7 @@ export default {
       const currentDate = new Date();
       const selectedDate = new Date(date)
       return currentDate.getFullYear() >= selectedDate.getFullYear()
-    }
+    },
   }
 };
 </script>
