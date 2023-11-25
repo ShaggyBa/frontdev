@@ -109,7 +109,7 @@
           <option value="Чернышева">Чернышева</option>
         </select>
       </div>
-      <div class="page__field">
+      <div class="page__field page__field--checkbox">
         <label for="no-sms">Не отправлять СМС</label>
         <input v-model="form.pageOne.noSms" id="no-sms" type="checkbox">
       </div>
@@ -184,53 +184,70 @@
           </span>
         </div>
       </div>
-      <div class="page__field">
-        <label for="passport-series">Серия</label>
-        <input v-model="form.pageThree.series" id="passport-series" placeholder="1234" maxlength="4"
-               @blur="v$.form.pageThree.series.$touch">
-        <div class="error--message" v-if="v$.form.pageThree.series.$errors.length">
+      <div class="page__field" v-if="v$.form.pageThree.type.$model !== ''">
+        <div class="page__field" v-if="v$.form.pageThree.type.$model === 'Паспорт'
+      || v$.form.pageThree.type.$model === 'Водительское удостоверение'">
+          <label for="passport-series">Серия</label>
+          <input v-model="form.pageThree.series" id="passport-series" placeholder="1234" maxlength="4"
+                 @blur="v$.form.pageThree.series.$touch">
+          <div class="error--message" v-if="v$.form.pageThree.series.$errors.length">
           <span v-if="v$.form.pageThree.series.numeric.$invalid">
             Поле "Серия" должно содержать только цифры
           </span>
-          <span v-else-if="v$.form.pageThree.series.minLength.$invalid">
+            <span v-else-if="v$.form.pageThree.series.minLength.$invalid">
             Поле "Серия" должно содержать не менее 4 цифр
           </span>
+          </div>
         </div>
-      </div>
-      <div class="page__field">
-        <label for="passport-number">Номер</label>
-        <input v-model="form.pageThree.number" id="passport-number" placeholder="123456" maxlength="6"
-               @blur="v$.form.pageThree.number.$touch">
-        <div class="error--message" v-if="v$.form.pageThree.number.$errors.length">
+        <div class="page__field" v-else-if="v$.form.pageThree.type.$model === 'Свидетельство о рождении'">
+          <label for="birth-certificate-series">Серия</label>
+          <input v-model="form.pageThree.birthCertificateSeries" id="birth-certificate-series" placeholder="IVАИ"
+                 maxlength="4"
+                 @blur="v$.form.pageThree.birthCertificateSeries.$touch">
+          <div class="error--message" v-if="v$.form.pageThree.birthCertificateSeries.$errors.length">
+          <span v-if="v$.form.pageThree.birthCertificateSeries.isValidTextField.$invalid">
+            Поле "Серия" содержит недопустимые символы
+          </span>
+            <span v-else-if="v$.form.pageThree.birthCertificateSeries.minLength.$invalid">
+            Поле "Серия" должно содержать не менее 4 символов
+          </span>
+          </div>
+        </div>
+        <div class="page__field">
+          <label for="passport-number">Номер</label>
+          <input v-model="form.pageThree.number" id="passport-number" placeholder="123456" maxlength="6"
+                 @blur="v$.form.pageThree.number.$touch">
+          <div class="error--message" v-if="v$.form.pageThree.number.$errors.length">
           <span v-if="v$.form.pageThree.number.numeric.$invalid">
             Поле "Номер" должно содержать только цифры
           </span>
-          <span v-else-if="v$.form.pageThree.number.minLength.$invalid">
+            <span v-else-if="v$.form.pageThree.number.minLength.$invalid">
             Поле "Номер" должно содержать не менее 6 цифр
           </span>
+          </div>
         </div>
-      </div>
-      <div class="page__field">
-        <label for="passport-issuer">Кем выдан</label>
-        <input v-model="form.pageThree.issuer" id="passport-issuer" maxlength="80"
-               @blur="v$.form.pageThree.issuer.$touch">
-        <div class="error--message" v-if="v$.form.pageThree.issuer.$errors.length">
+        <div class="page__field">
+          <label for="passport-issuer">Кем выдан</label>
+          <input v-model="form.pageThree.issuer" id="passport-issuer" maxlength="80"
+                 @blur="v$.form.pageThree.issuer.$touch">
+          <div class="error--message" v-if="v$.form.pageThree.issuer.$errors.length">
           <span v-if="v$.form.pageThree.issuer.isValidTextField.$invalid">
           Поле "Кем выдан" содержит недопустимые символы
           </span>
+          </div>
         </div>
-      </div>
-      <div class="page__field">
-        <label for="passport-issued-date">Дата выдачи*</label>
-        <input v-model="form.pageThree.issuedDate" id="passport-issued-date" type="date" maxlength="8" required
-               @blur="v$.form.pageThree.issuedDate.$touch">
-        <div class="error--message" v-if="v$.form.pageThree.issuedDate.$errors.length">
+        <div class="page__field">
+          <label for="passport-issued-date">Дата выдачи*</label>
+          <input v-model="form.pageThree.issuedDate" id="passport-issued-date" type="date" maxlength="8" required
+                 @blur="v$.form.pageThree.issuedDate.$touch">
+          <div class="error--message" v-if="v$.form.pageThree.issuedDate.$errors.length">
           <span v-if="v$.form.pageThree.issuedDate.required.$invalid">
             Поле "Дата выдачи" обязательно для заполнения
           </span>
-          <span v-else-if="v$.form.pageThree.issuedDate.isValidDate.$invalid">
+            <span v-else-if="v$.form.pageThree.issuedDate.isValidDate.$invalid">
             Некорректно введенная дата (дата не может быть больше текущей)
           </span>
+          </div>
         </div>
       </div>
     </div>
@@ -240,7 +257,7 @@
       <button type="button" @click="previousStep" v-bind:disabled="currentStep <= 1">Назад</button>
       <button type="button" @click="nextStep" v-bind:disabled="currentStep >= 3">Далее</button>
     </div>
-    <button type="submit" v-if="currentStep === 3">Отправить</button>
+    <button class="submit--btn" type="submit" v-if="currentStep === 3">Отправить</button>
     <span class="form--message">* - обязательные поля</span>
   </form>
 </template>
@@ -286,6 +303,7 @@ export default {
         pageThree: {
           type: '',
           series: '',
+          birthCertificateSeries: '',
           number: '',
           issuer: '',
           issuedDate: ''
@@ -348,6 +366,10 @@ export default {
           },
           series: {
             numeric,
+            minLength: minLength(4)
+          },
+          birthCertificateSeries: {
+            isValidTextField: text => this.isValidTextField(text),
             minLength: minLength(4)
           },
           number: {
