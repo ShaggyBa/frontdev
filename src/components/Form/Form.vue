@@ -1,5 +1,8 @@
 <template>
   <form id="form" @submit.prevent="submitForm">
+    <div v-if="isClientCreated" class="success-message">
+      Новый клиент успешно создан!
+    </div>
     <div class="form__page" v-if="currentStep === 1">
       <h3>Персональные данные</h3>
       <div class="page__field">
@@ -202,11 +205,11 @@
         <div class="page__field" v-else-if="v$.form.pageThree.type.$model === 'Свидетельство о рождении'">
           <label for="birth-certificate-series">Серия</label>
           <input v-model="form.pageThree.birthCertificateSeries" id="birth-certificate-series" placeholder="IVАИ"
-                 maxlength="4"
+                 maxlength="5"
                  @blur="v$.form.pageThree.birthCertificateSeries.$touch">
           <div class="error--message" v-if="v$.form.pageThree.birthCertificateSeries.$errors.length">
-          <span v-if="v$.form.pageThree.birthCertificateSeries.isValidTextField.$invalid">
-            Поле "Серия" содержит недопустимые символы
+          <span v-if="v$.form.pageThree.birthCertificateSeries.isValidBirthCertificateSeries.$invalid">
+            Поле "Серия" содержит недопустимые символы, необходимый формат: IVАИ
           </span>
             <span v-else-if="v$.form.pageThree.birthCertificateSeries.minLength.$invalid">
             Поле "Серия" должно содержать не менее 4 символов
@@ -309,7 +312,8 @@ export default {
           issuedDate: ''
         },
       },
-      currentStep: 3
+      currentStep: 1,
+      isClientCreated: false
     };
   },
   validations() {
@@ -369,7 +373,7 @@ export default {
             minLength: minLength(4)
           },
           birthCertificateSeries: {
-            isValidTextField: text => this.isValidTextField(text),
+            isValidBirthCertificateSeries: text => this.isValidBirthCertificateSeries(text),
             minLength: minLength(4)
           },
           number: {
@@ -392,13 +396,16 @@ export default {
       if (this.v$.$invalid) {
         this.v$.$touch();
         this.currentStep = 1;
-      } else
+      } else {
         console.log("Form submitted: ", this.form)
+        this.isClientCreated = true
+      }
     },
     nextStep() {
-      if (this.isValidPage(this.currentStep))
+      if (this.isValidPage(this.currentStep)) {
         this.currentStep++
-      else
+        this.v$.$reset()
+      } else
         this.v$.$touch()
     },
     previousStep() {
@@ -435,6 +442,12 @@ export default {
       if (text === '')
         return true
       const reg = /^[а-яА-Я-a-zA-Z\s]+$/
+      return reg.test(text)
+    },
+    isValidBirthCertificateSeries(text) {
+      if (text === '')
+        return true
+      const reg = /^(?:[IVXLCDM]{1,3})[a-zA-Zа-яА-Я]{2}$/
       return reg.test(text)
     },
     isValidPage(page) {
