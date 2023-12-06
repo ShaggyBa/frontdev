@@ -1,4 +1,4 @@
-# frontdev
+# Form validation using vuelidate in vue
 
 ## Project setup
 ```
